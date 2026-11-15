@@ -1,12 +1,12 @@
 # ShowBuddy
 
-Sitio web de ShowBuddy, un conjunto de aplicaciones abiertas para sonido,
-iluminación y visual: <https://showbuddy-seven.vercel.app/>.
+Website for ShowBuddy, a set of open apps for sound, lighting and visuals:
+<https://showbuddy-seven.vercel.app/>.
 
-Página estática sin paso de compilación; Vercel la despliega con cada push a
-`main`. Para verla en local basta con abrir `index.html`.
+Static page with no build step; Vercel deploys it on every push to `main`.
+To preview locally, open `index.html`.
 
-- `index.html`: contenido.
-- `styles.css`: estilo 8 bits (negro, grises y ámbar; bordes gruesos y
-  sombras duras).
-- `pixels.js`: iconos pixelados, definidos como grillas de 10x10.
+- `index.html`: content.
+- `styles.css`: 8-bit style (black, greys and one colour per app; thick
+  borders and hard shadows).
+- `pixels.js`: pixel icons, defined as 10x10 grids.

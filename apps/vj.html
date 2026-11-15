@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VJBuddy · UI preview</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ui.css">
+<style>
+main { display: grid; grid-template: minmax(0, 1fr) 236px / minmax(0, 1fr) 372px; gap: 8px; min-height: 0; }
+.comp .body { display: grid; grid-template-rows: auto repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px; }
+.lrow { display: grid; grid-template-columns: 148px repeat(8, minmax(0, 1fr)); gap: 6px; min-height: 0; }
+.lrow.head { align-items: center; }
+.lrow.head .b { width: 100%; }
+.layer { display: flex; flex-direction: column; justify-content: space-between; gap: 4px; padding: 7px 8px; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; }
+.layer.sel { border-color: var(--c); }
+.layer .slide { flex: none; width: 100%; }
+.clip { position: relative; min-height: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #0d0d0d; }
+.clip.empty { border-style: dashed; background: none; }
+.clip.live { border-color: var(--c); box-shadow: 0 0 0 1px var(--c); }
+.clip span { position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 6px; font-size: 10px; background: #000a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clip.live span { color: var(--ink); background: var(--c); font-weight: 600; }
+.clip u { position: absolute; left: 0; top: 0; height: 3px; width: var(--p); background: var(--c); }
+/* Generated "footage": greys plus the app colour */
+.art { position: absolute; inset: 0; }
+.a1 { background: repeating-linear-gradient(45deg, #111 0 10px, #3a3a3a 10px 20px); }
+.a2 { background: radial-gradient(circle at 50% 55%, var(--c) 0 12%, #222 13% 30%, #555 31% 48%, #111 49%); }
+.a3 { background: conic-gradient(from 0deg at 50% 50%, #111, #666, #111, var(--c), #111); }
+.a4 { background: repeating-linear-gradient(90deg, #0d0d0d 0 8px, #777 8px 10px); }
+.a5 { background: radial-gradient(circle, #888 1.5px, transparent 2px) 0 0 / 12px 12px, #151515; }
+.a6 { background: linear-gradient(160deg, #000 20%, var(--c) 50%, #000 80%); }
+.a7 { background: repeating-conic-gradient(#1a1a1a 0 25%, #4a4a4a 0 50%) 0 0 / 22px 22px; }
+.a8 { background: repeating-radial-gradient(circle at 50% 50%, #111 0 8px, #5a5a5a 8px 10px); }
+.spin { animation: turn 9s linear infinite; inset: -40%; }
+.slidex { animation: slidex 2.4s linear infinite; }
+.pulse { animation: pulse 1.9s ease-in-out infinite; }
+@keyframes turn { to { transform: rotate(1turn); } }
+@keyframes slidex { to { background-position: 40px 0; } }
+@keyframes pulse { 50% { transform: scale(1.5); } }
+.monitors { display: grid; grid-template-rows: 1fr 1fr; gap: 8px; min-height: 0; }
+.screen { position: relative; flex: 1; min-height: 0; margin: 8px; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.screen .mix { position: absolute; inset: 0; mix-blend-mode: screen; opacity: .8; }
+.bottom { grid-column: 1 / -1; display: grid; grid-template-columns: 1.15fr 1.25fr 1fr 1fr; gap: 8px; min-height: 0; }
+.fx { display: grid; grid-template-columns: 14px 86px 1fr 34px; align-items: center; gap: 8px; padding: 4px 0; }
+.xf { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
+</style>
+</head>
+<body data-app="vj">
+<main>
+  <section class="panel comp">
+    <h3>Composition · Summer Set <em>1920 × 1080 · 60 fps</em></h3>
+    <div class="body" id="grid"></div>
+  </section>
+
+  <div class="monitors">
+    <section class="panel"><h3><span class="led on"></span> Output <em>Screen 1</em></h3>
+      <div class="screen"><div class="art a3 spin"></div><div class="art a4 slidex mix"></div><div class="art a2 pulse mix"></div></div></section>
+    <section class="panel"><h3>Preview <em>Layer 3 · Tunnel</em></h3>
+      <div class="screen"><div class="art a8 pulse"></div></div></section>
+  </div>
+
+  <div class="bottom">
+    <section class="panel"><h3>Clip · Tunnel <em>00:12.4 / 00:32.0</em></h3>
+      <div class="body col">
+        <div class="row"><span class="b">⏮</span><span class="b on">▶</span><span class="b">⏸</span><span class="b">⟲ Loop</span><span class="b on">BPM Sync</span><span class="b">Reverse</span></div>
+        <div class="row"><span class="dim mono">IN</span><span class="slide thumb" style="--v:.39"></span><span class="dim mono">OUT</span></div>
+        <div class="row spread" id="clipknobs" style="margin-top:6px"></div>
+        <div class="row"><span class="dim" style="width:52px">Blend</span><span class="b">Add</span><span class="b on">Screen</span><span class="b">Multiply</span><span class="b">Alpha</span></div>
+      </div></section>
+
+    <section class="panel"><h3>Effects · Layer 3 <em>4 active</em></h3>
+      <div class="body" id="fx"></div></section>
+
+    <section class="panel"><h3>Sources</h3>
+      <div class="row" style="padding:8px 10px 0"><span class="b on">Files</span><span class="b">Generators</span><span class="b">Live inputs</span><span class="b">Text</span></div>
+      <div class="list scroll" id="files" style="margin-top:8px"></div></section>
+
+    <section class="panel"><h3>Master <em>128.00 BPM</em></h3>
+      <div class="body col">
+        <div class="row"><span class="big">128.00</span><span class="b lg">TAP</span><span class="b">÷2</span><span class="b">×2</span><span class="b on">Resync</span></div>
+        <div class="xf"><span class="b">A</span><span class="slide thumb" style="--v:.3"></span><span class="b">B</span></div>
+        <div class="row"><span class="dim" style="width:72px">Master</span><span class="slide" style="--v:.92"></span><span class="mono">92%</span></div>
+        <div class="row"><span class="dim" style="width:72px">Speed</span><span class="slide" style="--v:.5"></span><span class="mono">1.00×</span></div>
+        <div class="row"><span class="led on"></span>Screen 1 · 1920 × 1080<span class="grow"></span><span class="b on">ON</span></div>
+        <div class="row"><span class="led"></span>Screen 2 · LED wall 3840 × 720<span class="grow"></span><span class="b">OFF</span></div>
+      </div></section>
+  </div>
+</main>
+<script src="ui.js"></script>
+<script>
+const { h, knob, slide, btn } = UI;
+UI.bar(['File', 'Edit', 'Composition', 'Layer', 'Clip', 'Output', 'View']);
+
+const names = ['Stripes', 'Orbit', 'Prism', 'Scanner', 'Stars', 'Beam', 'Checker', 'Tunnel'];
+const layers = [
+  { name: 'Layer 4 · Overlay', op: .35, live: 4, clips: [1, 0, 5, 0, 2, 0, 0, 7] },
+  { name: 'Layer 3 · Shapes', op: .8, live: 7, sel: true, clips: [8, 3, 0, 6, 4, 1, 8, 8] },
+  { name: 'Layer 2 · Motion', op: 1, live: 3, clips: [4, 7, 2, 4, 0, 3, 6, 0] },
+  { name: 'Layer 1 · Background', op: 1, live: 2, clips: [6, 5, 3, 1, 8, 2, 0, 4] },
+];
+const grid = document.getElementById('grid');
+grid.append(h('div.lrow.head', h('span.dim', 'Columns'), Array.from({ length: 8 }, (_, i) => btn(String(i + 1), i === 2 ? 'on' : ''))));
+layers.forEach((L, li) => grid.append(h('div.lrow',
+  h('div.layer' + (L.sel ? '.sel' : ''),
+    h('div', { style: { 'font-weight': 600 } }, L.name),
+    h('div.row', btn('B'), btn('S'), btn('✕'), h('span.mono.dim', { style: { 'margin-left': 'auto' } }, Math.round(L.op * 100) + '%')),
+    slide(L.op)),
+  L.clips.map((a, ci) => a
+    ? h('div.clip' + (ci === L.live ? '.live' : ''), h('div.art.a' + a), ci === L.live ? h('u', { style: { '--p': (30 + li * 17) + '%' } }) : null, h('span', names[a - 1]))
+    : h('div.clip.empty')))));
+
+document.getElementById('clipknobs').append(knob('Opacity', .8), knob('Speed', .5), knob('Scale', .62), knob('Rotate', .5), knob('Pos X', .5), knob('Pos Y', .44));
+[['Kaleidoscope', .7, 1], ['RGB Split', .25, 1], ['Blur', .1, 0], ['Strobe', .55, 1], ['Mirror', 1, 1], ['Hue Rotate', .4, 0]].forEach(([n, v, on]) =>
+  document.getElementById('fx').append(h('div.fx', h('span.led' + (on ? '.on' : '')), n, slide(v), h('span.mono.dim', Math.round(v * 100) + '%'))));
+[['Tunnel.mov', '00:32', 1], ['Prism_loop.mov', '00:16'], ['Stars_4K.mov', '01:04'], ['Logo_alpha.png', 'still'], ['Beam_sweep.mov', '00:08'], ['Crowd_cam (NDI)', 'live'], ['Checker.gen', 'gen']].forEach(([n, d, sel]) =>
+  document.getElementById('files').append(h('div' + (sel ? '.sel' : ''), n, h('span.mono.dim', { style: { 'margin-left': 'auto' } }, d))));
+</script>
+</body>
+</html>

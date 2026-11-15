@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DJBuddy · UI preview</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ui.css">
+<style>
+main { display: grid; grid-template-rows: 336px 104px minmax(0, 1fr); gap: 8px; min-height: 0; }
+.decks { display: grid; grid-template-columns: minmax(0, 1fr) 316px minmax(0, 1fr); gap: 8px; min-height: 0; }
+.deck { --k: var(--d); }
+.deck .body { display: grid; grid-template-rows: auto 46px 1fr; gap: 8px; }
+.deck h3 em { color: var(--d); }
+.info { display: grid; grid-template-columns: 1fr auto auto auto; align-items: end; gap: 16px; }
+.info .t { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.info .v { font: 600 18px var(--mono); color: var(--d); text-align: right; }
+.info small { display: block; font-size: 9px; letter-spacing: .8px; text-transform: uppercase; color: var(--dim); text-align: right; }
+.over { position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.over::after, .scrollwave::after { content: ""; position: absolute; top: 0; bottom: 0; left: var(--at, 50%); width: 2px; background: var(--text); }
+.ctl { display: grid; grid-template-columns: 132px 1fr 46px; gap: 12px; min-height: 0; }
+.deck.right .ctl { grid-template-columns: 46px 1fr 132px; }
+.platter { position: relative; align-self: center; width: 132px; height: 132px; border-radius: 50%; background: repeating-radial-gradient(circle, #1c1c1c 0 3px, #101010 3px 6px); border: 2px solid var(--line); }
+.platter::before { content: ""; position: absolute; inset: 38%; border-radius: 50%; background: var(--d); }
+.platter::after { content: ""; position: absolute; left: 50%; top: 4px; width: 3px; height: 44%; margin-left: -1.5px; background: var(--text); border-radius: 2px; transform-origin: 50% calc(100% + 6px); animation: turn 1.8s linear infinite; }
+.deck.right .platter::after { animation-duration: 1.86s; }
+@keyframes turn { to { transform: rotate(1turn); } }
+.pads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.pads .b { height: 30px; }
+.pads .b.cue { color: var(--ink); background: var(--p); border-color: var(--p); }
+.pitch { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mixer .body { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; }
+.chs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; min-height: 0; }
+.ch { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 12px; min-height: 0; }
+.ch .knobs { display: flex; flex-direction: column; justify-content: space-between; }
+.ch .fad { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 0; }
+.mid { display: flex; gap: 3px; padding: 4px 0; }
+.scrollwave { position: relative; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.waves { display: grid; grid-template-rows: 1fr 1fr; gap: 4px; padding: 6px; }
+.lib { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-height: 0; }
+.lib .list { border-right: 1px solid var(--line); }
+td .tag { display: inline-block; min-width: 18px; padding: 0 5px; font: 700 10px var(--mono); color: var(--ink); border-radius: 3px; text-align: center; }
+</style>
+</head>
+<body data-app="dj">
+<main>
+  <div class="decks">
+    <section class="panel deck" style="--d: var(--dj)" id="deckA"></section>
+    <section class="panel mixer"><h3>Mixer <em>REC 00:42:17</em></h3><div class="body" id="mixer"></div></section>
+    <section class="panel deck right" style="--d: #f2f2f2" id="deckB"></section>
+  </div>
+  <section class="panel waves">
+    <div class="scrollwave" style="--at: 40%"><canvas id="wA"></canvas></div>
+    <div class="scrollwave" style="--at: 40%"><canvas id="wB"></canvas></div>
+  </section>
+  <section class="panel"><h3>Library <em>1,248 tracks</em></h3>
+    <div class="lib">
+      <div class="list" id="crates"></div>
+      <div class="scroll"><table id="tracks"></table></div>
+    </div></section>
+</main>
+<script src="ui.js"></script>
+<script>
+const { h, knob, fader, slide, meter, btn } = UI;
+UI.bar(['File', 'Library', 'Decks', 'Record', 'Effects', 'View']);
+const CUES = ['#ff8080', '#ffb000', '#1fd6ae', '#5ccbff', '#b388ff'];
+
+function deck(id, side, t) {
+  const pads = h('div.pads', Array.from({ length: 8 }, (_, i) => i < t.cues
+    ? h('span.b.cue', { style: { '--p': CUES[i % CUES.length] } }, String(i + 1)) : btn(String(i + 1))));
+  const center = h('div.col',
+    h('div.row', btn('Hot cue', 'on'), btn('Loop'), btn('Roll'), btn('Sampler')), pads,
+    h('div.row', btn('½'), btn('1'), btn('2'), btn('4', t.loop ? 'on' : ''), btn('8'), btn('16'), h('span.dim', 'beats')),
+    h('div.row', btn('CUE', 'lg'), btn('▶ ❙❙', 'lg on'), btn('SYNC', 'lg' + (t.sync ? ' on' : '')), btn('Key lock', 'lg')));
+  const platter = h('div.platter');
+  const pitch = h('div.pitch', h('span.mono.dim', t.pitch), fader(t.pv, 'wide'), h('span.dim', 'TEMPO'));
+  document.getElementById(id).append(
+    h('h3', 'Deck ' + side, h('em', t.left + ' left')),
+    h('div.body',
+      h('div.info', h('div', h('div.t', t.title), h('div.dim', t.artist)),
+        h('div', h('div.v', t.bpm), h('small', 'BPM')), h('div', h('div.v', t.key), h('small', 'Key')), h('div', h('div.v', t.time), h('small', 'Elapsed'))),
+      h('div.over', { style: { '--at': t.at * 100 + '%' } }, h('canvas', { id: 'o' + side })),
+      h('div.ctl', ...(side === 'A' ? [platter, center, pitch] : [pitch, center, platter]))));
+}
+deck('deckA', 'A', { title: 'Night Circuit', artist: 'Lumen Drive', bpm: '124.0', key: '8A', time: '03:12', left: '02:41', at: .54, cues: 5, sync: true, loop: false, pitch: '+0.0%', pv: .5 });
+deck('deckB', 'B', { title: 'Glass Harbour (Extended)', artist: 'Mira Voss', bpm: '124.0', key: '9A', time: '00:48', left: '05:27', at: .13, cues: 3, sync: true, loop: true, pitch: '−1.6%', pv: .42 });
+
+const ch = (name, o) => {
+  const knobs = h('div.knobs', knob('Gain', o.g, 'sm'), knob('High', o.hi, 'sm'), knob('Mid', o.mid, 'sm'), knob('Low', o.lo, 'sm'), knob('Filter', .5, 'sm'));
+  const fad = h('div.fad', h('span.dim', 'CH ' + name), fader(o.f, 'wide'), btn('CUE', o.cue ? 'on' : ''));
+  return h('div.ch', ...(name === 'A' ? [knobs, fad] : [fad, knobs]));
+};
+document.getElementById('mixer').append(
+  h('div.chs', ch('A', { g: .6, hi: .5, mid: .55, lo: .5, f: .86, cue: 0 }),
+    h('div.mid', meter(.74), meter(.7), h('span', { style: { width: '8px' } }), meter(.42), meter(.4)),
+    ch('B', { g: .58, hi: .45, mid: .5, lo: .12, f: .48, cue: 1 })),
+  h('div.row', h('span.b', 'A'), slide(.34, 'thumb'), h('span.b', 'B')));
+
+['All tracks', 'Tonight · warm-up', 'Tonight · peak', 'House', 'Techno', 'Disco edits', 'Recently added', 'History'].forEach((c, i) =>
+  document.getElementById('crates').append(h('div' + (i === 2 ? '.sel' : ''), (i > 0 && i < 3 ? '▸ ' : '') + c)));
+const rows = [
+  ['A', 'Night Circuit', 'Lumen Drive', '124.0', '8A', '5:53', 'House'],
+  ['B', 'Glass Harbour (Extended)', 'Mira Voss', '124.0', '9A', '6:15', 'House'],
+  ['', 'Paper Satellites', 'Otto Renn', '125.0', '9A', '6:02', 'House'],
+  ['', 'Low Tide Signal', 'Hale & Corwin', '126.0', '10A', '5:41', 'Tech house'],
+  ['', 'Velvet Static', 'Nadia Okoro', '126.0', '10B', '7:08', 'Tech house'],
+  ['', 'Third Floor Sun', 'Camino Sur', '127.0', '11B', '6:30', 'Disco'],
+  ['', 'Copper Sky', 'Lumen Drive', '128.0', '11A', '5:59', 'Techno'],
+  ['', 'Afterglow Engine', 'Tessel', '128.0', '12A', '6:44', 'Techno'],
+  ['', 'Small Hours', 'Mira Voss', '122.0', '7A', '4:52', 'Deep house'],
+  ['', 'Parallel Lines', 'Otto Renn', '130.0', '1A', '6:18', 'Techno'],
+];
+const T = document.getElementById('tracks');
+T.append(h('tr', ['', 'Title', 'Artist', 'BPM', 'Key', 'Time', 'Genre'].map((x, i) => h('th' + (i === 3 || i === 5 ? '.n' : ''), x))));
+rows.forEach((r, i) => T.append(h('tr' + (i === 2 ? '.sel' : ''),
+  h('td', r[0] ? h('span.tag', { style: { background: r[0] === 'A' ? 'var(--dj)' : '#f2f2f2' } }, r[0]) : ''),
+  h('td', r[1]), h('td.dim', r[2]), h('td.n', r[3]), h('td.mono', r[4]), h('td.n', r[5]), h('td.dim', r[6]))));
+
+const red = getComputedStyle(document.body).getPropertyValue('--dj').trim();
+UI.wave(document.getElementById('oA'), { seed: 11, color: red, played: .54, bars: 260, dimColor: '#6b3a3a' });
+UI.wave(document.getElementById('oB'), { seed: 29, color: '#f2f2f2', played: .13, bars: 260, dimColor: '#555' });
+UI.wave(document.getElementById('wA'), { seed: 5, color: red, bars: 420, played: 0 });
+UI.wave(document.getElementById('wB'), { seed: 41, color: '#f2f2f2', bars: 420, played: 0 });
+UI.animateMeters();
+</script>
+</body>
+</html>

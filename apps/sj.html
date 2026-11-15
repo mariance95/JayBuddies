@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SJBuddy · UI preview</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ui.css">
+<style>
+main { display: grid; grid-template-rows: 268px minmax(0, 1fr); gap: 8px; min-height: 0; }
+.detail { display: grid; grid-template-columns: 170px minmax(0, 1.5fr) minmax(0, 1.2fr) minmax(0, 1fr) 190px; gap: 8px; min-height: 0; }
+.graph { position: relative; flex: 1; min-height: 0; background: #000; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.graph svg { display: block; width: 100%; height: 100%; }
+.send { display: grid; grid-template-columns: 62px 1fr 34px; align-items: center; gap: 8px; padding: 3px 0; }
+.strips { flex: 1; display: flex; gap: 4px; min-height: 0; padding: 8px; }
+.strip { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 2px; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; }
+.strip.sel { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--panel2)); }
+.strip .name { width: 100%; padding: 3px 2px; font-size: 10px; font-weight: 600; text-align: center; color: var(--ink); background: var(--t, #888); border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.strip .b { min-width: 0; width: 100%; height: 20px; padding: 0; }
+.strip .btns { display: grid; gap: 3px; width: calc(100% - 8px); }
+.strip .fad { display: flex; gap: 4px; flex: 1; min-height: 0; }
+.strip .db { font: 10px var(--mono); color: var(--dim); }
+.strip.bus { background: #191919; }
+.strip.main { flex: 1.5; border-color: var(--c); }
+.gap { width: 6px; flex: none; }
+.mini { width: calc(100% - 8px); height: 20px; background: #000; border: 1px solid var(--line); border-radius: 3px; }
+.mini svg { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body data-app="sj">
+<main>
+  <div class="detail">
+    <section class="panel"><h3>Input <em>CH 03</em></h3>
+      <div class="body col">
+        <div style="font-size:15px;font-weight:600">Vocal Lead</div>
+        <div class="dim">Stage box A · input 3</div>
+        <div class="row spread" id="inknobs"></div>
+        <div class="row"><span class="b on">48V</span><span class="b">Ø</span><span class="b on">HPF</span><span class="b">Pad</span></div>
+        <div class="row"><span class="dim mono">IN</span><span class="meter h" data-live=".7" style="--l:.7"></span></div>
+      </div></section>
+
+    <section class="panel"><h3>Equalizer <em>4 bands · on</em></h3>
+      <div class="body col">
+        <div class="graph"><svg viewBox="0 0 400 120" preserveAspectRatio="none">
+          <g stroke="#262626" stroke-width="1"><path d="M0 30H400M0 60H400M0 90H400M50 0V120M130 0V120M210 0V120M290 0V120M360 0V120"/></g>
+          <path d="M0 96 C30 96 44 62 70 60 S118 60 140 72 S176 86 200 60 S250 34 276 44 S330 60 400 52 V120 H0Z" fill="var(--c)" opacity=".16"/>
+          <path d="M0 96 C30 96 44 62 70 60 S118 60 140 72 S176 86 200 60 S250 34 276 44 S330 60 400 52" fill="none" stroke="var(--c)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+          <g fill="var(--bg)" stroke="var(--text)" stroke-width="1.5"><circle cx="38" cy="92" r="5"/><circle cx="150" cy="76" r="5"/><circle cx="262" cy="38" r="5"/><circle cx="350" cy="54" r="5"/></g>
+        </svg></div>
+        <div class="row spread" id="eqknobs"></div>
+      </div></section>
+
+    <section class="panel"><h3>Dynamics <em>comp −4.2 dB</em></h3>
+      <div class="body col">
+        <div class="row" style="flex:1;min-height:0;align-items:stretch">
+          <div class="graph"><svg viewBox="0 0 120 120" preserveAspectRatio="none">
+            <path d="M0 120L120 0" stroke="#333" stroke-width="1" fill="none"/>
+            <path d="M0 120 L66 54 L120 34" stroke="var(--c)" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+            <circle cx="66" cy="54" r="4" fill="var(--bg)" stroke="var(--text)" stroke-width="1.5"/>
+          </svg></div>
+          <span class="meter gr" data-live=".35" style="--l:.35"></span>
+        </div>
+        <div class="row spread" id="dynknobs"></div>
+        <div class="row"><span class="b on">Comp</span><span class="b">Gate</span><span class="b">De-ess</span></div>
+      </div></section>
+
+    <section class="panel"><h3>Sends · CH 03</h3><div class="body" id="sends"></div></section>
+
+    <section class="panel"><h3>Scenes <em>3 / 8</em></h3><div class="list scroll" id="scenes"></div></section>
+  </div>
+
+  <section class="panel"><h3>Inputs 1–16 · Groups · Main <em>48 kHz · 2.7 ms</em></h3>
+    <div class="strips" id="strips"></div></section>
+</main>
+<script src="ui.js"></script>
+<script>
+const { h, knob, fader, slide, meter, btn } = UI;
+UI.bar(['File', 'Setup', 'Routing', 'Scenes', 'Effects', 'Monitor', 'View']);
+const r = UI.rng(3);
+
+document.getElementById('inknobs').append(knob('Gain', .62), knob('Trim', .5), knob('HPF', .3));
+document.getElementById('eqknobs').append(knob('Low', .42), knob('Lo-mid', .38), knob('Hi-mid', .7), knob('High', .56), knob('Q', .5), knob('Freq', .64));
+document.getElementById('dynknobs').append(knob('Thresh', .45), knob('Ratio', .5), knob('Attack', .2), knob('Release', .55), knob('Makeup', .6));
+[['Mon 1', .7], ['Mon 2', .35], ['Mon 3', .5], ['IEM L/R', .82], ['Reverb', .4], ['Delay', .22], ['Sub', 0]].forEach(([n, v]) =>
+  document.getElementById('sends').append(h('div.send', n, slide(v), h('span.mono.dim', v ? (Math.round(v * 30) - 30) + '' : '−∞'))));
+['Soundcheck', 'Opener', 'Song 3 · ballad', 'Acoustic set', 'Guest speaker', 'Full band', 'Encore', 'Walk-out'].forEach((s, i) =>
+  document.getElementById('scenes').append(h('div' + (i === 2 ? '.sel' : ''), h('span.mono.dim', String(i + 1).padStart(2, '0')), s)));
+
+const COL = { drums: '#ff8080', bass: '#ffb000', gtr: '#1fd6ae', keys: '#5ccbff', vox: '#b388ff', fx: '#bdbdbd' };
+const inputs = [
+  ['Kick', 'drums', .7, .72], ['Snare', 'drums', .66, .68], ['Vocal Lead', 'vox', .82, .74], ['Hat', 'drums', .5, .4], ['Tom 1', 'drums', .58, .2], ['Tom 2', 'drums', .58, .16],
+  ['OH L', 'drums', .6, .5], ['OH R', 'drums', .6, .5], ['Bass DI', 'bass', .74, .7], ['Gtr L', 'gtr', .68, .62], ['Gtr R', 'gtr', .68, .58], ['Keys L', 'keys', .6, .44],
+  ['Keys R', 'keys', .6, .46], ['BV 1', 'vox', .64, .3], ['BV 2', 'vox', .64, 0], ['Talkback', 'fx', .2, 0],
+];
+const mini = () => { const a = 10 + r() * 6, b = 6 + r() * 8, c = 8 + r() * 6; return h('div.mini', { html: `<svg viewBox="0 0 60 20" preserveAspectRatio="none"><path d="M0 ${a} C15 ${a} 20 ${b} 30 ${b} S45 ${c} 60 ${c}" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>` }); };
+const strip = (n, name, color, f, lvl, o = {}) => h('div.strip' + (o.cls || ''),
+  h('span.name', { style: { '--t': color } }, name),
+  o.plain ? null : mini(),
+  knob(o.plain ? 'Bal' : 'Pan', o.pan ?? .5, 'sm'),
+  h('div.btns', btn('SEL', o.sel ? 'on' : ''), btn('SOLO', o.solo ? 'amber' : ''), btn('MUTE', o.mute ? 'red' : '')),
+  h('div.fad', fader(f, o.wide ? 'wide' : ''), meter(o.mute ? 0 : lvl), o.wide ? meter(lvl * .96) : null),
+  h('span.db', o.mute ? 'MUTE' : (f > .74 ? '+' : '−') + Math.abs((f - .75) * 40).toFixed(1)),
+  h('span.dim.mono', n));
+const S = document.getElementById('strips');
+inputs.forEach(([name, grp, f, lvl], i) => S.append(strip(String(i + 1).padStart(2, '0'), name, COL[grp], f, lvl,
+  { cls: i === 2 ? '.sel' : '', sel: i === 2, mute: i === 14 || i === 15, solo: false, pan: [.5, .5, .5, .62, .4, .6, .1, .9, .5, .2, .8, .25, .75, .35, .65, .5][i] })));
+S.append(h('span.gap'));
+[['Drums', COL.drums, .72, .7], ['Band', COL.gtr, .7, .64], ['Vocals', COL.vox, .78, .7], ['FX', COL.fx, .6, .35]].forEach(([n, c, f, l], i) =>
+  S.append(strip('G' + (i + 1), n, c, f, l, { cls: '.bus', plain: true })));
+S.append(h('span.gap'), strip('LR', 'MAIN', '#f2f2f2', .76, .78, { cls: '.main', plain: true, wide: true }));
+UI.animateMeters();
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
-# ShowBuddy
+# JayBuddies
 
-Website for ShowBuddy, a set of open apps for sound, lighting and visuals:
-<https://showbuddy-seven.vercel.app/>.
+Website for JayBuddies, a set of open apps for sound, lighting and visuals:
+<https://jaybuddies.vercel.app/>.
 
 Static page with no build step; Vercel deploys it on every push to `main`.
 To preview locally, open `index.html`.

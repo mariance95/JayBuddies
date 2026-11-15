@@ -112,6 +112,8 @@ h3 { font-size: 18px; line-height: 1.3; letter-spacing: -1px; }
 .track i { width: 12px; height: 12px; background: var(--ink); flex: none; }
 @keyframes slide { to { transform: translateX(-50%); } }
 
+.lead.jays { margin: -8px 0 32px; }
+
 /* Tarjetas de apps */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 28px; }
 .card {

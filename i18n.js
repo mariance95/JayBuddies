@@ -4,8 +4,8 @@
 // English lives in the HTML; this file holds the Spanish strings.
 (() => {
   const ES = {
-    'meta.title': 'ShowBuddy · Todo tu show en un solo lugar',
-    'meta.description': 'ShowBuddy es un conjunto de aplicaciones abiertas para sonido, iluminación y visual: VJBuddy, DJBuddy, LJBuddy, SJBuddy y CJBuddy.',
+    'meta.title': 'JayBuddies · Todo tu show en un solo lugar',
+    'meta.description': 'JayBuddies es un conjunto de aplicaciones abiertas para sonido, iluminación y visual: VJBuddy, DJBuddy, LJBuddy, SJBuddy y CJBuddy.',
     'nav.future': 'Futuro',
     'hero.title': 'Todo tu show<br>en <span class="amber">un solo lugar</span>',
     'hero.lead': 'Un conjunto de aplicaciones para sonido, iluminación y visual. Herramientas abiertas para que todo tu show viva en el mismo sitio.',
@@ -15,6 +15,7 @@
     'area.lighting': 'Iluminación',
     'area.visuals': 'Visual',
     'apps.title': 'Las apps',
+    'apps.jays': 'Cada app es un Jay: VJ, DJ, LJ, SJ y CJ. Juntas son los JayBuddies.',
     'apps.vj': 'Una herramienta para VJs.',
     'apps.dj': 'Una herramienta para DJs.',
     'apps.lj': 'Un programa para controlar iluminación mediante DMX.',
@@ -25,16 +26,16 @@
     'btn.github': 'Abrir en GitHub',
     'btn.demo': 'Ver demo',
     'idea.title': 'Una alternativa abierta',
-    'idea.text': 'ShowBuddy <strong>no pretende reemplazar a la industria</strong>. Pretende crear una alternativa abierta y llena de opciones para unir algo que a veces es difícil de lograr:',
+    'idea.text': 'JayBuddies <strong>no pretende reemplazar a la industria</strong>. Pretende crear una alternativa abierta y llena de opciones para unir algo que a veces es difícil de lograr:',
     'idea.coordination': 'Coordinación',
     'idea.connection': 'Vinculación',
     'future.title': 'Todas conectadas',
     'future.lead': 'En el futuro, las apps se van a conectar entre sí para funcionar juntas, como un solo sistema.',
-    'future.map': 'Las cinco apps conectadas a ShowBuddy',
+    'future.map': 'Las cinco apps conectadas a JayBuddies',
     'footer.areas': 'Sonido · Iluminación · Visual',
   };
   const SPANISH_COUNTRIES = new Set(['AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'ES', 'GQ', 'GT', 'HN', 'MX', 'NI', 'PA', 'PE', 'PR', 'PY', 'SV', 'UY', 'VE']);
-  const KEY = 'showbuddy.lang', GEO_KEY = 'showbuddy.geo';
+  const KEY = 'jaybuddies.lang', GEO_KEY = 'jaybuddies.geo';
   const root = document.documentElement;
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },

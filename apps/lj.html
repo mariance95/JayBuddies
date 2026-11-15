@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LJBuddy · UI preview</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ui.css">
+<style>
+main { display: grid; grid-template-rows: minmax(0, 1fr) 188px 34px; gap: 8px; min-height: 0; }
+.work { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) 300px; gap: 8px; min-height: 0; }
+.stack { display: grid; grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr); gap: 8px; min-height: 0; }
+.stack3 { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; min-height: 0; }
+td .sw { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -2px; border-radius: 2px; border: 1px solid #0008; }
+td .lvl { display: inline-block; width: 46px; height: 6px; margin-right: 6px; background: #000; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; vertical-align: 1px; }
+td .lvl i { display: block; height: 100%; width: var(--v); background: var(--c); }
+.stage { position: relative; flex: 1; min-height: 0; margin: 8px; background: radial-gradient(ellipse at 50% 110%, #1c1c1c, #050505 70%); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.truss { position: absolute; left: 6%; right: 6%; height: 6px; background: repeating-linear-gradient(90deg, #3a3a3a 0 8px, #1c1c1c 8px 12px); border-radius: 2px; }
+.fx { position: absolute; width: 18px; height: 18px; margin: -9px; border-radius: 50%; background: var(--f); opacity: var(--o); box-shadow: 0 0 calc(var(--o) * 22px) var(--f); border: 2px solid #000; }
+.fx.sel { outline: 2px solid var(--c); outline-offset: 2px; }
+.fx.bar { width: 34px; margin-left: -17px; border-radius: 3px; }
+.stage small { position: absolute; left: 8px; font: 9px var(--mono); color: var(--dim); }
+.pool { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; padding: 8px; }
+.cell { position: relative; aspect-ratio: 1 / .78; padding: 3px 5px; font-size: 10px; line-height: 1.2; background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.cell b { display: block; font: 9px var(--mono); color: var(--dim); font-weight: 400; }
+.cell.empty { background: none; border-style: dashed; }
+.cell.sel { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.cell.col { color: #000; border-color: #0006; background: var(--f); font-weight: 600; }
+.cell.col b { color: #0009; }
+.keys { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; padding: 8px; }
+.keys .b { height: 30px; min-width: 0; padding: 0; }
+.execs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)) 8px 86px 260px; gap: 6px; min-height: 0; }
+.ex { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 5px; padding: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; min-height: 0; }
+.ex.run { border-color: var(--c); }
+.ex .nm { font-size: 10px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ex .nm small { display: block; font: 9px var(--mono); color: var(--dim); font-weight: 400; }
+.ex .bt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.ex .bt .b { min-width: 0; height: 20px; padding: 0; }
+.ex .fd { display: flex; justify-content: center; gap: 6px; min-height: 0; }
+.ex.gm { border-color: var(--line); }
+.enc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px; align-content: center; height: 100%; }
+.enc div { display: grid; justify-items: center; gap: 4px; padding: 8px 4px; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; }
+.enc b { font: 600 13px var(--mono); color: var(--c); }
+.cmd { display: flex; align-items: center; gap: 10px; padding: 0 12px; font: 13px var(--mono); background: #000; border: 1px solid var(--line); border-radius: 8px; }
+.cmd i { width: 8px; height: 15px; background: var(--c); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body data-app="lj">
+<main>
+  <div class="work">
+    <div class="stack">
+      <section class="panel"><h3>Fixtures <em>8 selected · Universe 1</em></h3><div class="scroll"><table id="fix"></table></div></section>
+      <section class="panel"><h3>Stage view <em>top</em></h3><div class="stage" id="stage"></div></section>
+    </div>
+
+    <div class="stack3">
+      <section class="panel"><h3>Groups</h3><div class="pool" id="groups"></div></section>
+      <section class="panel"><h3>Presets · Colour <em>Dimmer · Position · Colour · Gobo · Beam</em></h3><div class="pool" id="colors"></div></section>
+      <section class="panel"><h3>Presets · Position</h3><div class="pool" id="pos"></div></section>
+    </div>
+
+    <div class="stack">
+      <section class="panel"><h3>Cue list · Main show <em>cue 4 of 9</em></h3><div class="scroll"><table id="cues"></table></div></section>
+      <section class="panel"><h3>Programmer <em>8 fixtures · 3 values</em></h3><div class="keys" id="keys"></div></section>
+    </div>
+  </div>
+
+  <div class="execs" id="execs"></div>
+
+  <div class="cmd"><span class="dim">[Fixture]&gt;</span><span>Fixture 1 Thru 8 At 80</span><i></i><span class="grow" style="flex:1"></span><span class="dim">Page 1 · Show: Summer Set · DMX out: 4 universes</span></div>
+</main>
+<script src="ui.js"></script>
+<script>
+const { h, knob, fader, meter, btn } = UI;
+UI.bar(['File', 'Patch', 'Setup', 'Presets', 'Sequences', 'Effects', 'View']);
+
+const FX = [
+  [1, 'Spot 1', 'Moving spot', 80, 32, 48, '#ffb000', 'Amber', 'Open'], [2, 'Spot 2', 'Moving spot', 80, 36, 48, '#ffb000', 'Amber', 'Open'],
+  [3, 'Spot 3', 'Moving spot', 80, 40, 48, '#ffb000', 'Amber', 'Open'], [4, 'Spot 4', 'Moving spot', 80, 44, 48, '#ffb000', 'Amber', 'Open'],
+  [5, 'Spot 5', 'Moving spot', 80, 56, 48, '#ffb000', 'Amber', 'Open'], [6, 'Spot 6', 'Moving spot', 80, 60, 48, '#ffb000', 'Amber', 'Open'],
+  [7, 'Spot 7', 'Moving spot', 80, 64, 48, '#ffb000', 'Amber', 'Open'], [8, 'Spot 8', 'Moving spot', 80, 68, 48, '#ffb000', 'Amber', 'Open'],
+  [11, 'Wash L1', 'LED wash', 100, 50, 30, '#5ccbff', 'Sky', '—'], [12, 'Wash L2', 'LED wash', 100, 50, 30, '#5ccbff', 'Sky', '—'],
+  [13, 'Wash R1', 'LED wash', 100, 50, 30, '#b388ff', 'Purple', '—'], [14, 'Wash R2', 'LED wash', 100, 50, 30, '#b388ff', 'Purple', '—'],
+  [21, 'Blinder 1', 'Blinder', 0, 0, 0, '#f2f2f2', 'White', '—'], [22, 'Blinder 2', 'Blinder', 0, 0, 0, '#f2f2f2', 'White', '—'],
+];
+const T = document.getElementById('fix');
+T.append(h('tr', ['ID', 'Name', 'Type', 'Dim', 'Pan', 'Tilt', 'Colour', 'Gobo'].map((x, i) => h('th' + (i === 0 || i === 4 || i === 5 ? '.n' : ''), x))));
+FX.forEach(f => T.append(h('tr' + (f[0] <= 8 ? '.sel' : ''), h('td.n', f[0]), h('td', f[1]), h('td.dim', f[2]),
+  h('td.mono', h('span.lvl', h('i', { style: { '--v': f[3] + '%' } })), f[3] + '%'), h('td.n', f[4] + '%'), h('td.n', f[5] + '%'),
+  h('td', h('span.sw', { style: { background: f[6] } }), f[7]), h('td.dim', f[8]))));
+
+const st = document.getElementById('stage');
+[['18%', 'BACK TRUSS'], ['46%', 'MID TRUSS'], ['78%', 'FRONT TRUSS']].forEach(([y, n]) => st.append(h('div.truss', { style: { top: y } }), h('small', { style: { top: `calc(${y} + 10px)` } }, n)));
+const dot = (x, y, color, o, cls = '') => st.append(h('span.fx' + cls, { style: { left: x + '%', top: y + '%', '--f': color, '--o': o } }));
+[14, 24, 34, 44, 56, 66, 76, 86].forEach(x => dot(x, 19, '#ffb000', .9, '.sel'));
+[20, 36, 64, 80].forEach((x, i) => dot(x, 47, i < 2 ? '#5ccbff' : '#b388ff', 1));
+[30, 50, 70].forEach(x => dot(x, 79, '#f2f2f2', .15, '.bar'));
+
+const pool = (id, items, sel) => items.forEach((n, i) => document.getElementById(id).append(
+  n ? h('div.cell' + (i === sel ? '.sel' : ''), h('b', i + 1), n) : h('div.cell.empty', h('b', i + 1))));
+pool('groups', ['All spots', 'Spots odd', 'Spots even', 'Washes', 'Wash L', 'Wash R', 'Blinders', 'Floor', 'Truss back', 'Truss mid', 'Front', '', 'Band', 'Drums', '', ''], 0);
+[['White', '#f2f2f2'], ['Red', '#ff6b6b'], ['Amber', '#ffb000'], ['Yellow', '#ffe066'], ['Green', '#3ddc84'], ['Teal', '#1fd6ae'], ['Sky', '#5ccbff'], ['Blue', '#4d7cff'],
+ ['Purple', '#b388ff'], ['Magenta', '#ff66c4'], ['Pink', '#ffa6c9'], ['Warm', '#ffd6a0'], ['Cold', '#d6ecff'], ['UV', '#7a4dff'], null, null].forEach((c, i) =>
+  document.getElementById('colors').append(c ? h('div.cell.col' + (i === 2 ? '.sel' : ''), { style: { '--f': c[1] } }, h('b', i + 1), c[0]) : h('div.cell.empty', h('b', i + 1))));
+pool('pos', ['Home', 'Center', 'Singer', 'Drums', 'Guitar L', 'Guitar R', 'Crowd', 'Fan out', 'Cross', 'Floor', 'Ceiling', '', 'Sweep L', 'Sweep R', '', ''], 2);
+
+const C = document.getElementById('cues');
+C.append(h('tr', ['Cue', 'Name', 'Fade', 'Delay', 'Trig'].map((x, i) => h('th' + (i === 0 || i === 2 || i === 3 ? '.n' : ''), x))));
+[['1', 'Preset', '2.0', '0', 'Go'], ['2', 'Intro wash', '5.0', '0', 'Go'], ['3', 'Band enters', '3.0', '0', 'Go'], ['4', 'Song 1 · verse', '2.0', '0', 'Go'], ['4.5', 'Song 1 · chorus', '0.5', '0', 'Go'],
+ ['5', 'Song 1 · solo', '1.0', '0.5', 'Follow'], ['6', 'Song 2 · ballad', '8.0', '0', 'Go'], ['7', 'Blinders hit', '0', '0', 'Go'], ['8', 'Blackout', '0', '0', 'Go']].forEach((c, i) =>
+  C.append(h('tr' + (i === 3 ? '.sel' : ''), h('td.n', c[0]), h('td', (i === 3 ? '▶ ' : '') + c[1]), h('td.n', c[2]), h('td.n', c[3]), h('td.dim', c[4]))));
+
+const K = ['Fixture', 'Group', 'Preset', 'Cue', 'Exec', '7', '8', '9', 'Thru', '+', '4', '5', '6', 'At', '−', '1', '2', '3', 'Full', 'Clear', '0', '.', 'Enter', 'Store', 'Update'];
+K.forEach(k => document.getElementById('keys').append(btn(k, k === 'Fixture' ? 'on' : k === 'Store' ? 'amber' : k === 'Clear' ? 'red' : '')));
+
+const E = document.getElementById('execs');
+[['Main show', 'Seq 1 · cue 4', 1, 1], ['Wash looks', 'Seq 2 · cue 2', .8, 1], ['Spot chase', 'Chase · 128 BPM', .6, 1], ['Blinders', 'Flash', 0, 0], ['Strobe', 'Effect', 0, 0],
+ ['Haze', 'Channel', .35, 1], ['House', 'Channel', 0, 0], ['Colour FX', 'Effect', .5, 1], ['Movement', 'Effect', .7, 1], ['Speed', 'Master', .5, 0]].forEach(([n, s, v, run], i) =>
+  E.append(h('div.ex' + (run ? '.run' : ''), h('div.nm', n, h('small', (i + 1) + ' · ' + s)), h('div.bt', btn('Go', run ? 'on' : ''), btn('❙❙'), btn('Fl')), h('div.fd', fader(v, 'wide')))));
+E.append(h('span'), h('div.ex.gm', h('div.nm', 'Grand master', h('small', '100%')), h('div.bt', btn('B.O.', 'red'), btn('—'), btn('—')), h('div.fd', fader(1, 'wide'), meter(.8))),
+  h('section.panel', h('h3', 'Encoders · Spots'), h('div.enc', [['Dim', '80%', .8], ['Pan', '50%', .5], ['Tilt', '48%', .48], ['Zoom', '22°', .3]].map(([n, v, k]) => h('div', knob(n, k), h('b', v))))));
+UI.animateMeters();
+</script>
+</body>
+</html>

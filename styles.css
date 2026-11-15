@@ -7,6 +7,12 @@
   --dim: #8c8c8c;
   --amber: #ffb000;
   --ink: #0a0a0a;
+  /* Un color por app */
+  --vj: #1fd6ae;
+  --dj: #ff8080;
+  --lj: #ffb000;
+  --sj: #b388ff;
+  --cj: #5ccbff;
   --border: 4px;
   --pixel: "Press Start 2P", ui-monospace, Consolas, monospace;
   --term: "VT323", ui-monospace, Consolas, monospace;
@@ -23,6 +29,12 @@ body {
 }
 a { color: inherit; }
 .amber { color: var(--amber); }
+.app-vj { --c: var(--vj); }
+.app-dj { --c: var(--dj); }
+.app-lj { --c: var(--lj); }
+.app-sj { --c: var(--sj); }
+.app-cj { --c: var(--cj); }
+.code { color: var(--c, var(--amber)); }
 
 /* Cabecera */
 .top {
@@ -95,15 +107,14 @@ h3 { font-size: 18px; line-height: 1.3; letter-spacing: -1px; }
   box-shadow: 8px 8px 0 var(--line);
   transition: transform .08s steps(2), box-shadow .08s steps(2);
 }
-.card:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 var(--amber); }
+.card:hover { transform: translate(-3px, -3px); box-shadow: 11px 11px 0 var(--c, var(--amber)); }
 .card p { margin: 0; color: #c9c9c9; flex: 1; }
 .icon { width: 80px; height: 80px; padding: 10px; background: var(--bg); border: 3px solid var(--line); }
-.icon svg { display: block; width: 100%; height: 100%; fill: var(--text); }
-.card.live .icon { border-color: var(--amber); }
-.card.live .icon svg { fill: var(--amber); }
+.icon svg { display: block; width: 100%; height: 100%; fill: var(--c, var(--text)); }
+.card.live .icon { border-color: var(--c); }
 .area { color: var(--dim); font: 9px/1 var(--pixel); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
 .status { padding: 7px 9px; font: 9px/1 var(--pixel); text-transform: uppercase; color: var(--dim); border: 3px solid var(--line); }
-.status.on { color: var(--ink); background: var(--amber); border-color: var(--amber); }
+.status.on { color: var(--ink); background: var(--c, var(--amber)); border-color: var(--c, var(--amber)); }
 .card .btn { margin-top: 6px; }
 
 /* Idea */
@@ -122,10 +133,11 @@ h3 { font-size: 18px; line-height: 1.3; letter-spacing: -1px; }
 /* Mapa de conexiones */
 .link-map { margin-top: 36px; padding: clamp(14px, 3vw, 32px); background: var(--panel); border: var(--border) solid var(--text); box-shadow: 8px 8px 0 var(--line); }
 .link-map svg { display: block; width: 100%; height: auto; }
-.wires path { fill: none; stroke: var(--amber); stroke-width: 4; stroke-dasharray: 8 8; animation: flow 1s steps(4) infinite; }
+.wires path { fill: none; stroke: var(--c, var(--text)); stroke-width: 4; stroke-dasharray: 8 8; animation: flow 1s steps(4) infinite; }
 @keyframes flow { to { stroke-dashoffset: -16; } }
-.nodes rect { fill: var(--bg); stroke: var(--text); stroke-width: 4; }
+.nodes rect { fill: var(--bg); stroke: var(--c, var(--text)); stroke-width: 4; }
 .nodes text, .hub text { font: 16px var(--pixel); fill: var(--text); text-anchor: middle; dominant-baseline: central; }
+.nodes text { fill: var(--c, var(--text)); }
 .hub rect { fill: var(--bg); stroke: var(--amber); stroke-width: 4; }
 .amber-fill { fill: var(--amber); }
 

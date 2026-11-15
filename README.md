@@ -10,3 +10,6 @@ To preview locally, open `index.html`.
 - `styles.css`: 8-bit style (black, greys and one colour per app; thick
   borders and hard shadows).
 - `pixels.js`: pixel icons, defined as 10x10 grids.
+- `i18n.js`: English/Spanish switch. English lives in the HTML; this file
+  holds the Spanish strings. The default language follows the visitor's
+  country (`api/geo.js`, a Vercel function), then the browser language.
